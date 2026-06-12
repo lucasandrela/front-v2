@@ -3,148 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexBot — Assistente Inteligente</title>
+    <title>Artist Chat — Converse com seus ídolos</title>
+    <meta name="description" content="Escolha um artista e converse com a IA que imita sua personalidade única.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="noise-overlay"></div>
-  <div class="grid-bg"></div>
-
-  <div class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">
-        <span class="logo-hex">⬡</span>
-        <span class="logo-hex logo-hex--2">⬡</span>
+  <!-- ── TELA DE SELEÇÃO ── -->
+  <div id="selection-screen" class="selection-screen">
+    <div class="selection-header">
+      <div class="selection-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Artist Chat
       </div>
-      <div class="logo-text">
-        <span class="logo-name">NexBot</span>
-        <span class="logo-tagline">v2.4 · Gemini</span>
-      </div>
+      <p class="selection-subtitle">Escolha um artista e converse com a personalidade dele</p>
     </div>
 
-    <div class="status-card">
-      <div id="status-dot" class="status-dot status-dot--offline"></div>
-      <span id="status-label">Desconectado</span>
-    </div>
-
-    <nav class="sidebar-actions">
-      <button id="iniciarBtn" class="action-btn action-btn--start">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Iniciar sessão
-      </button>
-      <button id="limparBtn" class="action-btn action-btn--clear">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        Limpar conversa
-      </button>
-      <button id="encerrarBtn" class="action-btn action-btn--end">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        Encerrar sessão
-      </button>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="model-badge">
-        <span class="model-dot"></span>
-        gemini-flash-lite
-      </div>
-      <p class="sidebar-hint">IA generativa · respostas em tempo real</p>
+    <div class="artists-grid" id="artists-grid">
+      <!-- Cards gerados pelo JS -->
     </div>
   </div>
 
-  <main class="chat-main">
-    <header class="chat-topbar">
-      <div class="topbar-left">
-        <div class="bot-avatar">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="20" fill="url(#avatarGrad)"/>
-            <rect x="12" y="13" width="16" height="14" rx="3" fill="white" fill-opacity="0.9"/>
-            <circle cx="16" cy="19" r="2" fill="url(#eyeGrad)"/>
-            <circle cx="24" cy="19" r="2" fill="url(#eyeGrad)"/>
-            <rect x="16" y="23" width="8" height="1.5" rx="0.75" fill="url(#mouthGrad)"/>
-            <defs>
-              <linearGradient id="avatarGrad" x1="0" y1="0" x2="40" y2="40">
-                <stop offset="0%" stop-color="#6366f1"/>
-                <stop offset="100%" stop-color="#06b6d4"/>
-              </linearGradient>
-              <linearGradient id="eyeGrad" x1="0" y1="0" x2="4" y2="4" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#6366f1"/>
-                <stop offset="100%" stop-color="#06b6d4"/>
-              </linearGradient>
-              <linearGradient id="mouthGrad" x1="0" y1="0" x2="8" y2="0" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#6366f1"/>
-                <stop offset="100%" stop-color="#06b6d4"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span class="avatar-pulse"></span>
-        </div>
-        <div class="topbar-info">
-          <h1 class="topbar-title">NexBot</h1>
-          <span id="topbar-status" class="topbar-subtitle">Aguardando conexão...</span>
-        </div>
-      </div>
-      <div class="topbar-right">
-        <div class="stats-pill">
-          <span id="msg-count">0</span>
-          <span>mensagens</span>
-        </div>
-      </div>
-    </header>
+  <!-- ── TELA DE CHAT ── -->
+  <div id="chat-screen" class="chat-screen" style="display:none">
 
-    <div id="chat-box" class="chat-box">
-      <div class="welcome-screen" id="welcome-screen">
-        <div class="welcome-glyph">
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="40" cy="40" r="36" stroke="url(#wGrad)" stroke-width="1.5" stroke-dasharray="4 4"/>
-            <circle cx="40" cy="40" r="24" fill="url(#wGrad)" fill-opacity="0.1"/>
-            <path d="M28 34a4 4 0 018 0M44 34a4 4 0 018 0" stroke="url(#wGrad)" stroke-width="2" stroke-linecap="round"/>
-            <path d="M32 46s2 4 8 4 8-4 8-4" stroke="url(#wGrad)" stroke-width="2" stroke-linecap="round"/>
-            <defs>
-              <linearGradient id="wGrad" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#6366f1"/>
-                <stop offset="1" stop-color="#06b6d4"/>
-              </linearGradient>
-            </defs>
-          </svg>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="avatar-wrapper">
+          <div class="sidebar-avatar" id="sb-avatar"></div>
+          <span class="online-dot" id="online-dot"></span>
         </div>
-        <h2 class="welcome-title">Olá, sou o NexBot</h2>
-        <p class="welcome-subtitle">Seu assistente inteligente com memória de conversa.<br>Inicie uma sessão para começarmos.</p>
-        <div class="welcome-chips">
-          <button class="chip" data-prompt="O que você pode fazer?">💡 O que você pode fazer?</button>
-          <button class="chip" data-prompt="Me conte uma curiosidade incrível">🌐 Curiosidade incrível</button>
-          <button class="chip" data-prompt="Como posso aprender programação?">💻 Aprender programação</button>
+        <div>
+          <div class="sidebar-name" id="sb-name"></div>
+          <div class="sidebar-role" id="sb-role"></div>
         </div>
       </div>
-    </div>
 
-    <div class="typing-indicator-wrap" id="typing-wrap" style="display:none">
-      <div class="typing-indicator">
-        <span></span><span></span><span></span>
+      <div class="sidebar-divider"></div>
+
+      <nav class="sidebar-nav">
+        <button id="iniciarBtn" class="nav-btn nav-btn--primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Iniciar sessão
+        </button>
+        <button id="limparBtn" class="nav-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          Limpar conversa
+        </button>
+        <button id="encerrarBtn" class="nav-btn nav-btn--danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Encerrar sessão
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="status-block">
+        <span class="status-label">Status</span>
+        <div class="status-row">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-label-text">Desconectado</span>
+        </div>
       </div>
-      <span class="typing-label">NexBot está digitando</span>
-    </div>
 
-    <footer class="chat-input-area">
-      <div class="input-wrapper">
-        <textarea
-          id="message-input"
-          placeholder="Escreva sua mensagem… (Enter para enviar)"
-          rows="1"
-          disabled
-        ></textarea>
-        <button id="send-button" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
+      <div class="sidebar-quote" id="sb-quote">
+        <svg viewBox="0 0 24 24" fill="currentColor" class="quote-icon"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
+        <p id="sb-quote-text"></p>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="changeArtistBtn" class="change-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          Trocar artista
         </button>
       </div>
-      <p class="input-hint">NexBot pode cometer erros. Verifique informações importantes.</p>
-    </footer>
-  </main>
+    </aside>
+
+    <main class="chat-main">
+      <header class="topbar">
+        <div class="topbar-identity">
+          <div class="topbar-avatar">
+            <div class="topbar-avatar-icon" id="tb-avatar"></div>
+            <span class="topbar-status-dot" id="topbar-dot"></span>
+          </div>
+          <div>
+            <div class="topbar-name" id="tb-name"></div>
+            <div class="topbar-status" id="topbar-status">Aguardando conexão…</div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="msg-counter">
+            <span id="msg-count">0</span> msgs
+          </div>
+        </div>
+      </header>
+
+      <div id="chat-box" class="chat-box">
+        <div id="welcome-screen" class="welcome-screen">
+          <div class="welcome-avatar" id="wc-avatar"></div>
+          <h2 class="welcome-title" id="wc-name"></h2>
+          <p class="welcome-sub" id="wc-desc"></p>
+          <div class="suggestions" id="wc-chips"></div>
+        </div>
+      </div>
+
+      <div class="typing-wrap" id="typing-wrap" style="display:none">
+        <div class="typing-bubble">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="typing-text" id="typing-text">Digitando…</span>
+      </div>
+
+      <footer class="input-area">
+        <div class="input-row">
+          <textarea
+            id="message-input"
+            placeholder="Escreva sua mensagem… (Enter para enviar)"
+            rows="1"
+            disabled
+          ></textarea>
+          <button id="send-button" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </main>
+
+  </div>
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
